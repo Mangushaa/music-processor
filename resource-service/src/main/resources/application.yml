@@ -1,0 +1,24 @@
+server:
+  port: 8080
+
+spring:
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5433/resource_service_db}
+    username: ${SPRING_DATASOURCE_USERNAME:postgres}
+    password: ${SPRING_DATASOURCE_PASSWORD:postgres}
+  jpa:
+    show-sql: true
+    properties:
+      hibernate:
+        format-sql: true
+    hibernate:
+      ddl-auto: create
+
+song-service:
+  name: song-service
+  url: ${SONG_SERVICE_URL:http://localhost:8081}
+
+validation:
+  message:
+    content:
+      empty: "Content must not be empty"
