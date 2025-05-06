@@ -15,6 +15,7 @@ services:
 
   resource-service-db:
     image: postgres:latest
+#    typo
     container_name: resoucre-service-db
     environment:
       POSTGRES_USER: postgres
@@ -23,8 +24,10 @@ services:
     ports:
       - "5433:5432"
     volumes:
+#      add initial script for creating db tables and init some data for tests
       - resource-service-db-data:/var/lib/postgresql/data
 
+#typo
   resoucre-service:
     build:
       context: ./resource-service
