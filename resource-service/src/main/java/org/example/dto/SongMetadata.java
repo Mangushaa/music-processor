@@ -4,13 +4,10 @@ import lombok.Data;
 
 @Data
 public class SongMetadata {
-    private String title;
+    int id;
+    private String name;
     private String artist;
     private String album;
-    private String genre;
-    private int year;
+    private String year;
     private String duration;
-    private String bitrate;
-    private String sampleRate;
-    private String channels;
 }

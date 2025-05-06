@@ -5,12 +5,15 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
+@Getter
+@Setter
 public class SongModel {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Integer id;
 
     @Column(nullable = false, length = 100)
@@ -22,7 +25,7 @@ public class SongModel {
     @Column(nullable = false, length = 100)
     private String album;
 
-    @Column(nullable = false, length = 4)
+    @Column(nullable = false, length = 5)
     private String duration;
 
     @Column(nullable = false)

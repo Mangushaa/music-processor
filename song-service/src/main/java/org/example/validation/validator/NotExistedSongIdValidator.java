@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class NotExistedSongIdValidator implements ConstraintValidator<NotExistedSongId, Integer> {
 
-    private SongRepository songRepository;
+    private final SongRepository songRepository;
 
     @Override
     public boolean isValid(Integer id, jakarta.validation.ConstraintValidatorContext context) {

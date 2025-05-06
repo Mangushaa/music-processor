@@ -6,7 +6,7 @@ import org.hibernate.validator.constraints.Length;
 import org.springframework.format.annotation.DateTimeFormat;
 
 @Data
-public class GetSongResponse {
+public class GetSongMetadataResponse {
 
     @Positive
     private Integer id;

@@ -4,20 +4,23 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
+import org.apache.tika.exception.TikaException;
 import org.example.dto.DeleteResourceResponse;
 import org.example.dto.GetResourceResponse;
 import org.example.dto.UploadResourceResponse;
-import org.example.intergration.client.SongClient;
 import org.example.mapper.ResourceMapper;
 import org.example.model.Resource;
 import org.example.repository.ResourceRepository;
 import org.example.service.ResourceService;
 import org.example.service.SongService;
 import org.example.service.exception.ResourceNotFoundException;
+import org.example.validation.annotation.GivenMimeType;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
+import org.xml.sax.SAXException;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
@@ -32,8 +35,10 @@ public class ResourceServiceImpl implements ResourceService {
 
     private final SongService songService;
 
-    @Transactional
-    public UploadResourceResponse uploadResource(@Valid @NotEmpty(message = "${validation.message.content.empty}") byte[] resource) {
+    @Transactional(rollbackFor = Exception.class)
+    public UploadResourceResponse uploadResource(
+            @Valid @GivenMimeType(mimeType = "audio/mpeg") byte[] resource
+    ) throws TikaException, IOException, SAXException {
         Resource newResource = resourceMapper.contentToResourceModel(resource);
         Resource savedResource = resourceRepository.save(newResource);
         songService.uploadSongMetadata(savedResource);
@@ -48,15 +53,16 @@ public class ResourceServiceImpl implements ResourceService {
 
     @Transactional
     public DeleteResourceResponse deleteResources(@Valid @NotEmpty List<Integer> ids) {
-        ids.forEach(this::deleteResoucreByIfPresent);
-        return new DeleteResourceResponse(ids);
+        List<Integer> deletedIds = ids.stream().filter(this::deleteResourceIfPresent).toList();
+        if (!deletedIds.isEmpty()) {
+            songService.deleteSongMetadata(deletedIds);
+        }
+        return new DeleteResourceResponse(deletedIds);
     }
 
-    private void deleteResoucreByIfPresent(Integer id) {
-        resourceRepository.findById(id).ifPresentOrElse(
-                resourceRepository::delete
-                , () -> {
-                    throw new ResourceNotFoundException(id);
-                });
+    private boolean deleteResourceIfPresent(Integer id) {
+        Optional<Resource> byId = resourceRepository.findById(id);
+        byId.ifPresent(resourceRepository::delete);
+        return byId.isPresent();
     }
 }

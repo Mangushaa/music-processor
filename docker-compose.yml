@@ -33,7 +33,7 @@ services:
     ports:
       - "8081:8080"
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://resoucre-service-db:5432/resource_service_db
+      SPRING_DATASOURCE_URL: jdbc:postgresql://resource-service-db:5432/resource_service_db
       SPRING_DATASOURCE_USERNAME: postgres
       SPRING_DATASOURCE_PASSWORD: postgres
     depends_on:

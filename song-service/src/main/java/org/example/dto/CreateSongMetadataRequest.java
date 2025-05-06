@@ -8,7 +8,7 @@ import org.hibernate.validator.constraints.Length;
 import org.springframework.format.annotation.DateTimeFormat;
 
 @Data
-public class CreateSongRequest {
+public class CreateSongMetadataRequest {
 
     @Positive
     @NotExistedSongId

@@ -1,17 +1,17 @@
 package org.example.mapper;
 
-import org.example.dto.CreateSongRequest;
-import org.example.dto.CreateSongResponse;
-import org.example.dto.GetSongResponse;
+import org.example.dto.CreateSongMetadataRequest;
+import org.example.dto.CreateSongMetadataResponse;
+import org.example.dto.GetSongMetadataResponse;
 import org.example.model.SongModel;
 import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring")
 public interface SongMapper {
 
-    SongModel songCreateRequestToSongModel(CreateSongRequest createSongRequest);
+    SongModel songCreateRequestToSongModel(CreateSongMetadataRequest createSongMetadataRequest);
 
-    CreateSongResponse songModelToCreateSongResponse(SongModel songModel);
+    CreateSongMetadataResponse songModelToCreateSongResponse(SongModel songModel);
 
-    GetSongResponse songModelToGetSongResponse(SongModel songModel);
+    GetSongMetadataResponse songModelToGetSongResponse(SongModel songModel);
 }

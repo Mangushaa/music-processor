@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.xml.sax.SAXException;
 
 import java.io.IOException;
+import java.util.List;
 
 @Service
 @Slf4j
@@ -25,12 +26,19 @@ public class SongServiceImpl implements SongService {
     private final SongMetadataExtractor songMetadataExtractor;
 
     @Override
-    public void uploadSongMetadata(Resource resource) {
+    public void uploadSongMetadata(Resource resource) throws TikaException, IOException, SAXException {
         try {
             SongMetadata songMetadata = songMetadataExtractor.extractMetadata(resource.getContent());
+            songMetadata.setId(resource.getId());
             songClient.createSongMetadata(songMetadata);
         } catch (RuntimeException | IOException | SAXException | TikaException e) {
             log.error(ERROR_UPLOADING_SONG_METADATA, e);
+            throw e;
         }
+    }
+
+    @Override
+    public void deleteSongMetadata(List<Integer> ids) {
+        songClient.deleteSongsMetadata(ids);
     }
 }
