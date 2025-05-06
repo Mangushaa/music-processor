@@ -8,6 +8,6 @@ public class SongNotFoundException extends RuntimeException {
     private int songId;
 
     public SongNotFoundException(Integer songId) {
-
+        this.songId = songId;
     }
 }

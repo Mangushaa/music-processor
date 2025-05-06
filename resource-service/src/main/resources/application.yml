@@ -17,8 +17,3 @@ spring:
 song-service:
   name: song-service
   url: ${SONG_SERVICE_URL:http://localhost:8081}
-
-validation:
-  message:
-    content:
-      empty: "Content must not be empty"

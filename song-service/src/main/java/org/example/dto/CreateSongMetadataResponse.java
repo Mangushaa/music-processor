@@ -3,7 +3,6 @@ package org.example.dto;
 import lombok.Data;
 
 @Data
-public class CreateSongResponse {
-
+public class CreateSongMetadataResponse {
     private Integer id;
 }
