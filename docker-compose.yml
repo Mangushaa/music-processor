@@ -5,71 +5,70 @@ services:
     image: postgres:latest
     container_name: song-service-db
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: ${SONG_DB_USERNAME}
+      POSTGRES_PASSWORD: ${SONG_DB_PASSWORD}
       POSTGRES_DB: song_service_db
     ports:
       - "5432:5432"
     volumes:
+      - ./init-scripts/song-db:/docker-entrypoint-initdb.d/
       - song-service-db-data:/var/lib/postgresql/data
 
   resource-service-db:
     image: postgres:latest
-#    typo
-    container_name: resoucre-service-db
+    container_name: resource-service-db
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: ${RESOURCE_DB_USERNAME}
+      POSTGRES_PASSWORD: ${RESOURCE_DB_PASSWORD}
       POSTGRES_DB: resource_service_db
     ports:
       - "5433:5432"
     volumes:
-#      add initial script for creating db tables and init some data for tests
+      - ./init-scripts/resource-db:/docker-entrypoint-initdb.d/
       - resource-service-db-data:/var/lib/postgresql/data
 
-#typo
   resoucre-service:
     build:
-      context: ./resource-service
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: ./resource-service/Dockerfile
     container_name: resource-service
     ports:
-      - "8081:8080"
+      - "${RESOURCE_SERVICE_PORT}:8080"
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://resource-service-db:5432/resource_service_db
-      SPRING_DATASOURCE_USERNAME: postgres
-      SPRING_DATASOURCE_PASSWORD: postgres
+      RESOURCE_DB_URL: ${RESOURCE_DB_URL}
+      RESOURCE_DB_USERNAME: ${RESOURCE_DB_USERNAME}
+      RESOURCE_DB_PASSWORD: ${RESOURCE_DB_PASSWORD}
+      SONG_SERVICE_URL: http://song-service:8081
     depends_on:
       - resource-service-db
 
   song-service:
     build:
-      context: ./song-service
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: ./song-service/Dockerfile
     container_name: song-service
     ports:
-      - "8080:8080"
+      - "${SONG_SERVICE_PORT}:8080"
     environment:
-        SPRING_DATASOURCE_URL: jdbc:postgresql://song-service-db:5432/song_service_db
-        SPRING_DATASOURCE_USERNAME: postgres
-        SPRING_DATASOURCE_PASSWORD: postgres
-        RESOURCE_SERVICE_URL: http://resoucre-service:8080
+      SONG_DB_URL: ${SONG_DB_URL}
+      SONG_DB_USERNAME: ${SONG_DB_USERNAME}
+      SONG_DB_PASSWORD: ${SONG_DB_PASSWORD}
     depends_on:
-        - song-service-db
+      - song-service-db
 
   pgadmin:
-      image: dpage/pgadmin4:latest
-      container_name: pgadmin
-      environment:
-        PGADMIN_DEFAULT_EMAIL: admin@admin.com
-        PGADMIN_DEFAULT_PASSWORD: admin
-      ports:
-        - "5050:80"
-      depends_on:
-        - resource-service-db
+    image: dpage/pgadmin4:latest
+    container_name: pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "5050:80"
+    depends_on:
+      - resource-service-db
 
 volumes:
-    song-service-db-data:
-        driver: local
-    resource-service-db-data:
-        driver: local
+  song-service-db-data:
+    driver: local
+  resource-service-db-data:
+    driver: local

@@ -1,0 +1,8 @@
+CREATE TABLE song_model (
+    id INTEGER PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    artist VARCHAR(100) NOT NULL,
+    album VARCHAR(100) NOT NULL,
+    duration VARCHAR(5) NOT NULL,
+    year INTEGER NOT NULL
+);
