@@ -4,10 +4,10 @@ WORKDIR /app
 
 # Copy the project files
 COPY pom.xml pom.xml
-WORKDIR ./resource-service
-COPY /resource-service/pom.xml pom.xml
+WORKDIR ./discovery-service
+COPY /discovery-service/pom.xml pom.xml
 RUN mvn dependency:go-offline
-COPY /resource-service/src src
+COPY /discovery-service/src src
 RUN mvn clean package -DskipTests
 
 # Use an official OpenJDK image to run the application
@@ -15,7 +15,7 @@ FROM eclipse-temurin:21-jdk
 WORKDIR /app
 
 # Copy the built JAR file from the build stage
-COPY --from=build /app/resource-service/target/*.jar app.jar
+COPY --from=build /app/discovery-service/target/*.jar app.jar
 
 # Expose the application port
 EXPOSE 8080

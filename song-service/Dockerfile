@@ -19,6 +19,7 @@ COPY --from=build /app/song-service/target/*.jar app.jar
 
 # Expose the application port
 EXPOSE 8080
+EXPOSE 5005
 
 # Run the application
-CMD ["java", "-jar", "app.jar"]
+CMD ["java", "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005" , "-jar", "app.jar"]
