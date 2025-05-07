@@ -34,11 +34,13 @@ services:
     container_name: resource-service
     ports:
       - "${RESOURCE_SERVICE_PORT}:8080"
+      - "${RESOURCE_SERVICE_DEBUG_PORT}:5005"
     environment:
       RESOURCE_DB_URL: ${RESOURCE_DB_URL}
       RESOURCE_DB_USERNAME: ${RESOURCE_DB_USERNAME}
       RESOURCE_DB_PASSWORD: ${RESOURCE_DB_PASSWORD}
       SONG_SERVICE_URL: http://song-service:8081
+      DISCOVERY_SERVICE_URL: "http://discovery-server:${DISCOVERY_SERVICE_PORT}/eureka"
     depends_on:
       - resource-service-db
 
@@ -46,15 +48,29 @@ services:
     build:
       context: .
       dockerfile: ./song-service/Dockerfile
-    container_name: song-service
-    ports:
-      - "${SONG_SERVICE_PORT}:8080"
+    deploy:
+      replicas: 2
+    #    container_name: song-service
+#    ports:
+#       - '8081:8080'
+#      - "${SONG_SERVICE_DEBUG_PORT}:5005"
     environment:
       SONG_DB_URL: ${SONG_DB_URL}
       SONG_DB_USERNAME: ${SONG_DB_USERNAME}
       SONG_DB_PASSWORD: ${SONG_DB_PASSWORD}
+      DISCOVERY_SERVICE_URL: "http://discovery-server:${DISCOVERY_SERVICE_PORT}/eureka"
     depends_on:
       - song-service-db
+      - discovery-server
+
+  discovery-server:
+    build:
+      context: .
+      dockerfile: ./discovery-service/Dockerfile
+    container_name: discovery-service
+    ports:
+      - "${DISCOVERY_SERVICE_PORT}:8761"
+#      - "${DISCOVERY_SERVICE_DEBUG_PORT}:5005"
 
   pgadmin:
     image: dpage/pgadmin4:latest

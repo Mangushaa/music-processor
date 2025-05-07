@@ -2,6 +2,8 @@ server:
   port: 8080
 
 spring:
+  application:
+    name: resource-service
   datasource:
     url: ${RESOURCE_DB_URL:jdbc:postgresql://localhost:5433/resource_service_db}
     username: ${RESOURCE_DB_USERNAME:postgres}
@@ -11,6 +13,13 @@ spring:
     properties:
       hibernate:
         format-sql: true
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: ${DISCOVERY_SERVICE_URL:http://localhost:8761/eureka}
+  instance:
+    preferIpAddress=false:
 
 song-service:
   name: song-service
