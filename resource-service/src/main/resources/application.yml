@@ -13,19 +13,23 @@ spring:
     properties:
       hibernate:
         format-sql: true
-  cloud:
-    aws:
-      credentials:
-        access-key: STUB
-        secret-key: STUB
-      endpoint: http://localhost:4566
-
+  #  cloud:
+  #    aws:
+  #      credentials:
+  #        access-key: STUB
+  #        secret-key: STUB
+  #      endpoint: http://localhost:4566
+  rabbitmq:
+    host: ${RABBITMQ_HOST:localhost}
+    port: ${RABBITMQ_PORT:5672}
+    username: ${RABBITMQ_USERNAME:guest}
+    password: ${RABBITMQ_PASSWORD:guest}
 eureka:
   client:
     serviceUrl:
       defaultZone: ${DISCOVERY_SERVICE_URL:http://localhost:8761/eureka}
   instance:
-    preferIpAddress: true
+    preferIpAddress: false
 
 song-service:
   name: song-service
@@ -36,11 +40,31 @@ localstack:
 
 aws:
   region: ${AWS_REGION:us-west-2}
-  url: ${AWS_URL:http://localhost:4566"}
-  accessKey: ${AWS_ACCESS_KEY:http://localhost:4566"}
-  secretKey: ${AWS_SECRET_KEY:http://localhost:4566"}
-s3:
-  resource-bucket: ${RESOURCE_BUCKET:resource-bucket}
+  s3:
+    resource-bucket: ${RESOURCE_BUCKET:resource-bucket}
+  host: ${AWS_HOST:http://localhost:4566}
+  accessKey: ${AWS_ACCESS_KEY:test}
+  secretKey: ${AWS_SECRET_KEY:test}
 
+messaging:
+  rabbitmq:
+    resourceCreatedQueueName: ${RESOURCE_CREATED_QUEUE_NAME:resource.created.local}
+    resourceDeletedQueueName: ${RESOURCE_DELETED_QUEUE_NAME:resource.deleted.local}
+    resourceExchange: ${RESOURCE_EXCHANGE_NAME:resource}
+    resourceCreatedRoutingKey: resource.created
+    resourceDeletedRoutingKey: resource.deleted
 
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "health"
+  endpoint:
+    health:
+      show-details: "always"
 
+logging:
+  level:
+    org:
+      springframework:
+        amqp: DEBUG

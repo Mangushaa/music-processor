@@ -5,7 +5,7 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class ResourceUploadResponseDto {
+public class ResourceUploadResponse {
 
     private String resourceLocation;
 }

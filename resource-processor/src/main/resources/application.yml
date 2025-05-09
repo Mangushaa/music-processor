@@ -1,9 +1,14 @@
 server:
-  port: 8080
+  port: ${SERVER_PORT:8083}
 
 spring:
   application:
     name: resource-processor
+  rabbitmq:
+    host: ${RABBITMQ_HOST:localhost}
+    port: ${RABBITMQ_PORT:5672}
+    username: ${RABBITMQ_USERNAME:guest}
+    password: ${RABBITMQ_PASSWORD:guest}
 
 eureka:
   client:
@@ -11,3 +16,15 @@ eureka:
       defaultZone: ${DISCOVERY_SERVICE_URL:http://localhost:8761/eureka}
   instance:
     preferIpAddress=false:
+
+clients:
+  url:
+    service:
+      song: ${SONG_SERVICE_URL:http://localhost:8081}
+      resource: ${RESOURCE_SERVICE_URL:http://localhost:8080}
+
+messaging:
+  rabbitmq:
+    resourceCreatedQueueName: ${RESOURCE_CREATED_QUEUE_NAME:resource.created.local}
+    resourceDeletedQueueName: ${RESOURCE_DELETED_QUEUE_NAME:resource.deleted.local}
+    resourceExchange: ${RESOURCE_EXCHANGE_NAME:resource.exchange.local}

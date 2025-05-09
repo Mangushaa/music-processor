@@ -7,16 +7,16 @@ import org.example.dto.DeleteResourceResponse;
 import org.example.dto.GetResourceResponse;
 import org.example.dto.UploadResourceResponse;
 import org.example.intergration.client.ResourceClient;
-import org.example.intergration.client.dto.ResourceUploadResponseDto;
+import org.example.intergration.client.dto.ResourceUploadResponse;
+import org.example.intergration.producer.ResourceProducer;
+import org.example.intergration.producer.dto.ResourceCreatedEvent;
+import org.example.intergration.producer.dto.ResourceDeletedEvent;
 import org.example.mapper.ResourceMapper;
 import org.example.model.Resource;
 import org.example.repository.ResourceRepository;
 import org.example.service.ResourceService;
-import org.example.service.SongService;
-import org.example.service.exception.MetadataExtractingException;
 import org.example.service.exception.ResourceNotFoundException;
 import org.example.validation.annotation.GivenMimeType;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
@@ -33,25 +33,28 @@ public class ResourceServiceImpl implements ResourceService {
 
     private final ResourceMapper resourceMapper;
 
-    private final SongService songService;
-
     private final ResourceClient resourceClient;
 
+    private final ResourceProducer resourceProducer;
+    
     @Transactional(rollbackFor = Exception.class)
     public UploadResourceResponse uploadResource(
             @Valid @GivenMimeType(mimeType = "audio/mpeg") byte[] resource
-    ) throws MetadataExtractingException {
-        ResourceUploadResponseDto resourceUploadResponseDto = resourceClient.uploadResource(resource);
-        Resource newResource = resourceMapper.resourceUploadResponseDtoToResource(resourceUploadResponseDto);
+    ) {
+        ResourceUploadResponse resourceUploadResponse = resourceClient.uploadResource(resource);
+        Resource newResource = resourceMapper.resourceUploadResponseDtoToResource(resourceUploadResponse);
         Resource savedResource = resourceRepository.save(newResource);
-        songService.uploadSongMetadata(resource, savedResource);
-        return resourceMapper.resoucreModelToUploadResourceResponse(savedResource);
+        ResourceCreatedEvent resourceCreatedEvent = resourceMapper.resourceToResourceCreatedEvent(savedResource);
+        resourceProducer.sendResourceCreated(resourceCreatedEvent);
+        return resourceMapper.resourceModelToUploadResourceResponse(savedResource);
     }
 
     public GetResourceResponse getResource(@Valid @Positive Integer id) {
         Optional<Resource> resource = resourceRepository.findById(id);
-        return resource.map(resourceMapper::resourceModelToGetResourceResponse).orElseThrow(() ->
-                new ResourceNotFoundException(id));
+        return resource
+                .map(resourceClient::getResourceContent)
+                .map(resourceMapper::resourceContentResponseToGetResourceResponse)
+                .orElseThrow(() -> new ResourceNotFoundException(id));
     }
 
     @Transactional
@@ -60,9 +63,8 @@ public class ResourceServiceImpl implements ResourceService {
                 .filter(this::deleteResourceIfPresent)
                 .toList();
 
-        if (!deletedIds.isEmpty()) {
-            songService.deleteSongMetadata(deletedIds);
-        }
+        resourceProducer.sendResourceDeleted(new ResourceDeletedEvent(deletedIds));
+
         return new DeleteResourceResponse(deletedIds);
     }
 

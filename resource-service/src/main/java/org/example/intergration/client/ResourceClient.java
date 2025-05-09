@@ -1,8 +1,12 @@
 package org.example.intergration.client;
 
-import org.example.intergration.client.dto.ResourceUploadResponseDto;
+import org.example.intergration.client.dto.ResourceContentResponse;
+import org.example.intergration.client.dto.ResourceUploadResponse;
+import org.example.model.Resource;
 
 public interface ResourceClient {
 
-    ResourceUploadResponseDto uploadResource(byte[] resource);
+    ResourceUploadResponse uploadResource(byte[] resource);
+
+    ResourceContentResponse getResourceContent(Resource resource);
 }

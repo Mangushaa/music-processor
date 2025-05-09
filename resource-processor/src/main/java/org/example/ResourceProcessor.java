@@ -2,14 +2,12 @@ package org.example;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.cloud.openfeign.EnableFeignClients;
 
-@EnableConfigurationProperties
 @SpringBootApplication
-public class ResourceProcessor
-{
-    public static void main( String[] args )
-    {
+@EnableFeignClients
+public class ResourceProcessor {
+    public static void main(String[] args) {
         SpringApplication.run(ResourceProcessor.class);
     }
 }

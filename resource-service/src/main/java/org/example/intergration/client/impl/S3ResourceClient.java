@@ -1,28 +1,52 @@
 package org.example.intergration.client.impl;
 
 import lombok.RequiredArgsConstructor;
-import org.example.configuration.S3ConfigurationProperties;
+import lombok.extern.slf4j.Slf4j;
+import org.example.configuration.properties.AwsProperties;
 import org.example.intergration.client.ResourceClient;
-import org.example.intergration.client.dto.ResourceUploadResponseDto;
-import org.example.mapper.ResourceMapper;
+import org.example.intergration.client.dto.ResourceContentResponse;
+import org.example.intergration.client.dto.ResourceUploadResponse;
+import org.example.intergration.client.exception.ResourceNotFoundInS3Exception;
+import org.example.model.Resource;
 import org.springframework.stereotype.Service;
+import software.amazon.awssdk.core.ResponseInputStream;
+import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.GetObjectRequest;
+import software.amazon.awssdk.services.s3.model.GetObjectResponse;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
+import software.amazon.awssdk.services.s3.model.PutObjectResponse;
 
+import java.io.IOException;
 import java.util.UUID;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class S3ResourceClient implements ResourceClient {
 
     private final S3Client s3Client;
 
-    private final S3ConfigurationProperties s3ConfigurationProperties;
+    private final AwsProperties awsProperties;
 
     @Override
-    public ResourceUploadResponseDto uploadResource(byte[] resource) {
+    public ResourceUploadResponse uploadResource(byte[] resource) {
         PutObjectRequest putObjectRequest = createPutObjectRequest();
-        return new ResourceUploadResponseDto(createResourceLocation(putObjectRequest));
+        s3Client.putObject(putObjectRequest, RequestBody.fromBytes(resource));
+        return new ResourceUploadResponse(createResourceLocation(putObjectRequest));
+    }
+
+    @Override
+    public ResourceContentResponse getResourceContent(Resource resource) {
+        ResponseInputStream<GetObjectResponse> object = s3Client.getObject(createGetObjectRequest(resource));
+        ResourceContentResponse resourceContentResponse = new ResourceContentResponse();
+        try {
+            resourceContentResponse.setContent(object.readAllBytes());
+            return resourceContentResponse;
+        } catch (IOException e) {
+            log.warn("Error reading resource from S3");
+            throw new ResourceNotFoundInS3Exception();
+        }
     }
 
     private String createResourceLocation(PutObjectRequest putObjectRequest) {
@@ -31,9 +55,18 @@ public class S3ResourceClient implements ResourceClient {
 
     private PutObjectRequest createPutObjectRequest() {
         return PutObjectRequest.builder()
-                .bucket(s3ConfigurationProperties.getResourceBucket())
+                .bucket(awsProperties.getS3().getResourceBucket())
                 .key(UUID.randomUUID().toString())
                 .contentType("audio/mpeg")
+                .build();
+    }
+
+    private GetObjectRequest createGetObjectRequest(Resource resource) {
+        String[] resourceLocationComponents = resource.getResourceLocation().split("/");
+        int resourceLocationComponentsLength = resourceLocationComponents.length;
+        return GetObjectRequest.builder().responseContentType("audio/mpeg")
+                .bucket(resourceLocationComponents[resourceLocationComponentsLength - 2])
+                .key(resourceLocationComponents[resourceLocationComponentsLength - 1])
                 .build();
     }
 }
