@@ -1,0 +1,4 @@
+CREATE TABLE resource (
+    id INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+    resource_location TEXT NOT NULL
+);

@@ -8,15 +8,17 @@ import org.example.intergration.producer.dto.ResourceCreatedEvent;
 import org.example.model.Resource;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import software.amazon.awssdk.services.s3.model.PutObjectResponse;
 
 @Mapper(componentModel = "spring")
 public interface ResourceMapper {
-    Resource resourceUploadResponseDtoToResource(ResourceUploadResponse resourceUploadResponse);
+    Resource resourceUploadResponseDtoToResource(ResourceUploadResponseDto resourceUploadResponseDto);
 
     UploadResourceResponse resourceModelToUploadResourceResponse(Resource resourceModel);
 
     GetResourceResponse resourceModelToGetResourceResponse(Resource resourceModel);
 
+    ResourceUploadResponseDto putObjectResponseToResourceUploadResponseDto(PutObjectResponse putObjectResponse);
     GetResourceResponse resourceContentResponseToGetResourceResponse (ResourceContentResponse response);
 
     @Mapping(source = "id", target = "resourceId")
