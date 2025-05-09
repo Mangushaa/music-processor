@@ -2,6 +2,7 @@ package org.example.api.v1;
 
 import lombok.RequiredArgsConstructor;
 import org.example.dto.DeleteResourceResponse;
+import org.example.dto.GetResourceResponse;
 import org.example.dto.UploadResourceResponse;
 import org.example.service.ResourceService;
 import org.example.service.exception.MetadataExtractingException;
@@ -33,10 +34,10 @@ public class ResourceController {
     }
 
     @GetMapping(value = "/{id}", produces = "audio/mpeg")
-    public ResponseEntity<byte[]> getResource(@PathVariable(value = "id") Integer id) {
+    public ResponseEntity<GetResourceResponse> getResource(@PathVariable(value = "id") Integer id) {
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(resourceService.getResource(id).getContent());
+                .body(resourceService.getResource(id));
     }
 
     @DeleteMapping

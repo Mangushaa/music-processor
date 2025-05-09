@@ -1,6 +1,4 @@
-CREATE SEQUENCE resource_id_seq;
-
 CREATE TABLE resource (
-    id INTEGER PRIMARY KEY DEFAULT nextval('resource_id_seq'),
-    content BYTEA NOT NULL
+    id INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+    resource_location TEXT NOT NULL
 );

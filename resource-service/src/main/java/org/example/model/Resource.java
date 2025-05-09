@@ -14,13 +14,9 @@ import lombok.Setter;
 public class Resource {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(name = "content", nullable = false)
-    private byte[] content;
-
-    public byte[] getContent() {
-        return content;
-    }
+    @Column(name = "resource_location", nullable = false)
+    private String resourceLocation;
 }

@@ -13,6 +13,12 @@ spring:
     properties:
       hibernate:
         format-sql: true
+  cloud:
+    aws:
+      credentials:
+        access-key: STUB
+        secret-key: STUB
+      endpoint: http://localhost:4566
 
 eureka:
   client:
@@ -24,3 +30,13 @@ eureka:
 song-service:
   name: song-service
   url: ${SONG_SERVICE_URL:http://localhost:8081}
+
+
+
+aws:
+  region: ${AWS_REGION:us-west-2}
+s3:
+  resource-bucket: ${RESOURCE_BUCKET:resource-bucket}
+
+
+

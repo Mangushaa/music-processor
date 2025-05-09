@@ -40,6 +40,7 @@ services:
       RESOURCE_DB_USERNAME: ${RESOURCE_DB_USERNAME}
       RESOURCE_DB_PASSWORD: ${RESOURCE_DB_PASSWORD}
       SONG_SERVICE_URL: http://song-service:8081
+      AWS_REGION: us-west-2
       DISCOVERY_SERVICE_URL: "http://discovery-server:${DISCOVERY_SERVICE_PORT}/eureka"
     depends_on:
       - resource-service-db
@@ -48,12 +49,12 @@ services:
     build:
       context: .
       dockerfile: ./song-service/Dockerfile
-    deploy:
-      replicas: 2
-    #    container_name: song-service
-#    ports:
-#       - '8081:8080'
-#      - "${SONG_SERVICE_DEBUG_PORT}:5005"
+#    deploy:
+#      replicas: 2
+    container_name: song-service
+    ports:
+    - '${SONG_SERVICE_PORT}:8081'
+    - "${SONG_SERVICE_DEBUG_PORT}:5005"
     environment:
       SONG_DB_URL: ${SONG_DB_URL}
       SONG_DB_USERNAME: ${SONG_DB_USERNAME}
@@ -63,6 +64,19 @@ services:
       - song-service-db
       - discovery-server
 
+  resource-processor:
+    build:
+      context: .
+      dockerfile: ./song-service/Dockerfile
+    container_name: song-service
+    ports:
+       - '${RESOURCE_PROCESSOR_PORT}:8080'
+    environment:
+      DISCOVERY_SERVICE_URL: "http://discovery-server:${DISCOVERY_SERVICE_PORT}/eureka"
+    depends_on:
+      - discovery-server
+
+
   discovery-server:
     build:
       context: .
@@ -70,7 +84,7 @@ services:
     container_name: discovery-service
     ports:
       - "${DISCOVERY_SERVICE_PORT}:8761"
-#      - "${DISCOVERY_SERVICE_DEBUG_PORT}:5005"
+  #      - "${DISCOVERY_SERVICE_DEBUG_PORT}:5005"
 
   pgadmin:
     image: dpage/pgadmin4:latest
@@ -82,6 +96,22 @@ services:
       - "5050:80"
     depends_on:
       - resource-service-db
+
+  localstack:
+    container_name: "localstack"
+    image: localstack/localstack
+    ports:
+      - "4566:4566"
+      - "4510-4559:4510-4559"
+    environment:
+      # LocalStack configuration: https://docs.localstack.cloud/references/configuration/
+      - SERVICES=s3
+      - DEBUG=1
+
+    volumes:
+      - ./localstack-init:/etc/localstack/init/ready.d
+#      - "${LOCALSTACK_VOLUME_DIR:-./volume}:/var/lib/localstack"
+#      - "/var/run/docker.sock:/var/run/docker.sock"
 
 volumes:
   song-service-db-data:
