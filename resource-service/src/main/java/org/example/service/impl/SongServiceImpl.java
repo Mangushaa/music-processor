@@ -27,8 +27,9 @@ public class SongServiceImpl implements SongService {
     private final SongMetadataExtractor songMetadataExtractor;
 
     @Override
-    public void uploadSongMetadata(Resource resource) throws MetadataExtractingException {
-        SongMetadata songMetadata = extractSongMetadata(resource);
+    public void uploadSongMetadata(byte[] bytes, Resource resource) throws MetadataExtractingException {
+        SongMetadata songMetadata = extractSongMetadata(bytes);
+        songMetadata.setId(resource.getId());
         songClient.createSongMetadata(songMetadata);
     }
 
@@ -37,10 +38,9 @@ public class SongServiceImpl implements SongService {
         songClient.deleteSongsMetadata(ids);
     }
 
-    private SongMetadata extractSongMetadata(Resource resource) throws MetadataExtractingException {
+    private SongMetadata extractSongMetadata(byte[] resource) throws MetadataExtractingException {
         try {
-            SongMetadata songMetadata = songMetadataExtractor.extractMetadata(resource.getContent());
-            songMetadata.setId(resource.getId());
+            SongMetadata songMetadata = songMetadataExtractor.extractMetadata(resource);
             return songMetadata;
         } catch (RuntimeException | IOException | SAXException | TikaException e) {
             log.error(ERROR_EXTRACTING_SONG_METADATA, e);

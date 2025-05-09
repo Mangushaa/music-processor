@@ -1,13 +1,13 @@
 package org.example.service.impl;
 
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
-import org.apache.tika.exception.TikaException;
 import org.example.dto.DeleteResourceResponse;
 import org.example.dto.GetResourceResponse;
 import org.example.dto.UploadResourceResponse;
+import org.example.intergration.client.ResourceClient;
+import org.example.intergration.client.dto.ResourceUploadResponseDto;
 import org.example.mapper.ResourceMapper;
 import org.example.model.Resource;
 import org.example.repository.ResourceRepository;
@@ -16,13 +16,11 @@ import org.example.service.SongService;
 import org.example.service.exception.MetadataExtractingException;
 import org.example.service.exception.ResourceNotFoundException;
 import org.example.validation.annotation.GivenMimeType;
-import org.hibernate.validator.constraints.Length;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
-import org.xml.sax.SAXException;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
@@ -37,13 +35,16 @@ public class ResourceServiceImpl implements ResourceService {
 
     private final SongService songService;
 
+    private final ResourceClient resourceClient;
+
     @Transactional(rollbackFor = Exception.class)
     public UploadResourceResponse uploadResource(
             @Valid @GivenMimeType(mimeType = "audio/mpeg") byte[] resource
     ) throws MetadataExtractingException {
-        Resource newResource = resourceMapper.contentToResourceModel(resource);
+        ResourceUploadResponseDto resourceUploadResponseDto = resourceClient.uploadResource(resource);
+        Resource newResource = resourceMapper.resourceUploadResponseDtoToResource(resourceUploadResponseDto);
         Resource savedResource = resourceRepository.save(newResource);
-        songService.uploadSongMetadata(savedResource);
+        songService.uploadSongMetadata(resource, savedResource);
         return resourceMapper.resoucreModelToUploadResourceResponse(savedResource);
     }
 
