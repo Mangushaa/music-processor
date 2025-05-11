@@ -1,5 +1,5 @@
 server:
-  port: 8080
+  port: ${SERVER_PORT:8080}
 
 spring:
   application:
@@ -13,12 +13,11 @@ spring:
     properties:
       hibernate:
         format-sql: true
-  cloud:
-    aws:
-      credentials:
-        access-key: STUB
-        secret-key: STUB
-      endpoint: http://localhost:4566
+  rabbitmq:
+    host: ${RABBITMQ_HOST:localhost}
+    port: ${RABBITMQ_PORT:5672}
+    username: ${RABBITMQ_USERNAME:guest}
+    password: ${RABBITMQ_PASSWORD:guest}
 
 eureka:
   client:
@@ -31,12 +30,16 @@ song-service:
   name: song-service
   url: ${SONG_SERVICE_URL:http://localhost:8081}
 
-
-
 aws:
   region: ${AWS_REGION:us-west-2}
-s3:
-  resource-bucket: ${RESOURCE_BUCKET:resource-bucket}
+  s3:
+    resource-bucket: ${RESOURCE_BUCKET:resource-bucket}
+  host: ${AWS_HOST:http://localhost:4566}
+  accessKey: ${AWS_ACCESS_KEY:test}
+  secretKey: ${AWS_SECRET_KEY:test}
 
-
-
+messaging:
+  rabbitmq:
+    resourceCreatedQueueName: ${RESOURCE_CREATED_QUEUE_NAME:resource.created.local}
+    resourceDeletedQueueName: ${RESOURCE_DELETED_QUEUE_NAME:resource.deleted.local}
+    resourceExchange: ${RESOURCE_CREATED_QUEUE_NAME:resource}

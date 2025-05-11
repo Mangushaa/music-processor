@@ -4,5 +4,5 @@ import lombok.Data;
 
 @Data
 public class GetResourceResponse {
-    private String resourceLocation;
+    private byte[] content;
 }

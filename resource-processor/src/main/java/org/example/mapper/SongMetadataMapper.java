@@ -1,7 +1,7 @@
-package org.example.metadataper;
+package org.example.mapper;
 
 import org.apache.tika.metadata.Metadata;
-import org.example.dto.SongMetadata;
+import org.example.integration.client.dto.SongMetadataDto;
 import org.mapstruct.AfterMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -17,15 +17,14 @@ public interface SongMetadataMapper {
     @Mapping(target = "name", expression = "java(metadata.get(\"dc:title\"))")
     @Mapping(target = "year", expression = "java(metadata.get(\"xmpDM:releaseDate\"))")
     @Mapping(target = "duration", expression = "java(metadata.get(\"xmpDM:duration\"))")
-    SongMetadata metadataToSongMetadata(Metadata metadata);
+    SongMetadataDto metadataToSongMetadata(Metadata metadata);
 
     @AfterMapping
-    default void formatDuration(Metadata metadata, @MappingTarget SongMetadata songMetadata) {
+    default void formatDuration(Metadata metadata, @MappingTarget SongMetadataDto songMetadata) {
         BigDecimal duration = BigDecimal.valueOf(Double.parseDouble(songMetadata.getDuration()));
         BigDecimal minutes = duration.setScale(0, RoundingMode.DOWN);
         songMetadata.setDuration(String.format("%02d:%02d", minutes.intValue(), getSeconds(duration, minutes)));
     }
-
 
     default int getSeconds(BigDecimal duration, BigDecimal minutes) {
         return duration.subtract(minutes).multiply(BigDecimal.valueOf(10)).intValue();

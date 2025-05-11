@@ -1,5 +1,6 @@
 package org.example.configuration;
 
+import org.example.configuration.properties.AwsProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
@@ -14,12 +15,12 @@ import java.net.URI;
 public class AwsServicesConfiguration {
 
     @Bean
-    public S3Client s3Client() {
+    public S3Client s3Client(AwsProperties awsProperties) {
         return S3Client.builder()
-                .endpointOverride(URI.create("http://localhost:4566"))  // or "http://s3.localhost.localstack.cloud:4566" if DNS is correctly resolved
-                .region(Region.US_WEST_2)
+                .endpointOverride(URI.create(awsProperties.getHost()))
+                .region(Region.of(awsProperties.getRegion()))
                 .credentialsProvider(StaticCredentialsProvider.create(
-                        AwsBasicCredentials.create("test", "test")
+                        AwsBasicCredentials.create(awsProperties.getAccessKey(), awsProperties.getSecretKey())
                 ))
                 .serviceConfiguration(S3Configuration.builder().pathStyleAccessEnabled(true).build())
                 .build();

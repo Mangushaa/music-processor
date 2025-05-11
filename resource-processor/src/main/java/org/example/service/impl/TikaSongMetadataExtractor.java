@@ -1,14 +1,13 @@
 package org.example.service.impl;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.tika.Tika;
 import org.apache.tika.exception.TikaException;
 import org.apache.tika.metadata.Metadata;
 import org.apache.tika.parser.ParseContext;
 import org.apache.tika.parser.mp3.Mp3Parser;
 import org.apache.tika.sax.BodyContentHandler;
-import org.example.dto.SongMetadata;
-import org.example.metadataper.SongMetadataMapper;
+import org.example.integration.client.dto.SongMetadataDto;
+import org.example.mapper.SongMetadataMapper;
 import org.example.service.SongMetadataExtractor;
 import org.springframework.stereotype.Component;
 import org.xml.sax.SAXException;
@@ -24,7 +23,7 @@ public class TikaSongMetadataExtractor implements SongMetadataExtractor {
     private final SongMetadataMapper songMetadataMapper;
 
     @Override
-    public SongMetadata extractMetadata(byte[] content) throws TikaException, IOException, SAXException {
+    public SongMetadataDto extractMetadata(byte[] content) throws TikaException, IOException, SAXException {
         BodyContentHandler handler = new BodyContentHandler();
         Metadata metadata = new Metadata();
         InputStream inputstream = new ByteArrayInputStream(content);

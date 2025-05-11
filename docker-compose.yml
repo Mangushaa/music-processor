@@ -27,7 +27,7 @@ services:
       - ./init-scripts/resource-db:/docker-entrypoint-initdb.d/
       - resource-service-db-data:/var/lib/postgresql/data
 
-  resoucre-service:
+  resource-service:
     build:
       context: .
       dockerfile: ./resource-service/Dockerfile
@@ -39,45 +39,69 @@ services:
       RESOURCE_DB_URL: ${RESOURCE_DB_URL}
       RESOURCE_DB_USERNAME: ${RESOURCE_DB_USERNAME}
       RESOURCE_DB_PASSWORD: ${RESOURCE_DB_PASSWORD}
-      SONG_SERVICE_URL: http://song-service:8081
+      SONG_SERVICE_URL: http://song-service:8080
       AWS_REGION: us-west-2
-      DISCOVERY_SERVICE_URL: "http://discovery-server:${DISCOVERY_SERVICE_PORT}/eureka"
+      DISCOVERY_SERVICE_URL: http://discovery-service:${DISCOVERY_SERVICE_PORT}/eureka
+      RESOURCE_CREATED_QUEUE_NAME: ${RESOURCE_CREATED_QUEUE_NAME}
+      RESOURCE_EXCHANGE_NAME: ${RESOURCE_EXCHANGE_NAME}
+      SERVER_PORT: ${RESOURCE_SERVICE_SERVER_PORT}
+      RABBITMQ_HOST: ${RABBITMQ_HOST}
+      RABBITMQ_PORT: ${RABBITMQ_PORT}
+      RABBITMQ_USERNAME: ${RABBITMQ_USERNAME}
+      RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD}
+      RESOURCE_BUCKET: resource-bucket
+      AWS_HOST: ${AWS_HOST}
     depends_on:
       - resource-service-db
+      - rabbitmq
+      - discovery-service
 
   song-service:
     build:
       context: .
       dockerfile: ./song-service/Dockerfile
-#    deploy:
-#      replicas: 2
+    #    deploy:
+    #      replicas: 2
     container_name: song-service
     ports:
-    - '${SONG_SERVICE_PORT}:8081'
-    - "${SONG_SERVICE_DEBUG_PORT}:5005"
+      - '${SONG_SERVICE_PORT}:8080'
+      - "${SONG_SERVICE_DEBUG_PORT}:5005"
     environment:
       SONG_DB_URL: ${SONG_DB_URL}
       SONG_DB_USERNAME: ${SONG_DB_USERNAME}
       SONG_DB_PASSWORD: ${SONG_DB_PASSWORD}
-      DISCOVERY_SERVICE_URL: "http://discovery-server:${DISCOVERY_SERVICE_PORT}/eureka"
+      DISCOVERY_SERVICE_URL: http://discovery-service:${DISCOVERY_SERVICE_PORT}/eureka
+      SERVER_PORT: ${SONG_SERVICE_SERVER_PORT}
     depends_on:
       - song-service-db
-      - discovery-server
+      - discovery-service
 
   resource-processor:
     build:
       context: .
-      dockerfile: ./song-service/Dockerfile
-    container_name: song-service
+      dockerfile: ./resource-processor/Dockerfile
+    container_name: resource-processor
     ports:
-       - '${RESOURCE_PROCESSOR_PORT}:8080'
+      - '${RESOURCE_PROCESSOR_PORT}:8080'
     environment:
-      DISCOVERY_SERVICE_URL: "http://discovery-server:${DISCOVERY_SERVICE_PORT}/eureka"
+      DISCOVERY_SERVICE_URL: http://discovery-service:${DISCOVERY_SERVICE_PORT}/eureka
+      RABBITMQ_HOST: ${RABBITMQ_HOST}
+      RABBITMQ_PORT: ${RABBITMQ_PORT}
+      RABBITMQ_USERNAME: ${RABBITMQ_USERNAME}
+      RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD}
+      RESOURCE_CREATED_QUEUE_NAME: ${RESOURCE_CREATED_QUEUE_NAME}
+      RESOURCE_DELETED_QUEUE_NAME: ${RESOURCE_DELETED_QUEUE_NAME}
+      RESOURCE_EXCHANGE_NAME: ${RESOURCE_EXCHANGE_NAME}
+      SONG_SERVICE_URL: http://song-service:${SONG_SERVICE_SERVER_PORT}
+      RESOURCE_SERVICE_URL: http://resource-service:${RESOURCE_SERVICE_SERVER_PORT}
+      SERVER_PORT: 8080
     depends_on:
-      - discovery-server
+      - discovery-service
+      - resource-service
+      - rabbitmq
 
 
-  discovery-server:
+  discovery-service:
     build:
       context: .
       dockerfile: ./discovery-service/Dockerfile
@@ -104,14 +128,20 @@ services:
       - "4566:4566"
       - "4510-4559:4510-4559"
     environment:
-      # LocalStack configuration: https://docs.localstack.cloud/references/configuration/
       - SERVICES=s3
       - DEBUG=1
-
     volumes:
       - ./localstack-init:/etc/localstack/init/ready.d
-#      - "${LOCALSTACK_VOLUME_DIR:-./volume}:/var/lib/localstack"
-#      - "/var/run/docker.sock:/var/run/docker.sock"
+
+
+  rabbitmq:
+    image: "rabbitmq:3-management"
+    ports:
+      - "15672:15672"
+      - "5672:5672"
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USERNAME}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD}
 
 volumes:
   song-service-db-data:
