@@ -91,6 +91,19 @@
                     </annotationProcessorPaths>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>${spring.boot.version}</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>repackage</goal> <!-- This goal repackages the application into a fat jar -->
+                        </goals>
+                        <phase>package</phase> <!-- Ensures it runs in the package phase -->
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
 </project>
