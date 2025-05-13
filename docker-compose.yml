@@ -27,7 +27,7 @@ services:
       - ./init-scripts/resource-db:/docker-entrypoint-initdb.d/
       - resource-service-db-data:/var/lib/postgresql/data
 
-  resoucre-service:
+  resource-service:
     build:
       context: .
       dockerfile: ./resource-service/Dockerfile

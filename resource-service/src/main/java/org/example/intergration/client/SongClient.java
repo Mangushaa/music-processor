@@ -9,12 +9,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
-@FeignClient(name = "${song-service.name}", url = "${song-service.url}")
+@FeignClient(name = "${song-service.name}")
 public interface SongClient {
 
     @PostMapping("/songs")
     void createSongMetadata(@RequestBody SongMetadata songMetadata);
 
     @DeleteMapping("/songs")
-    void deleteSongsMetadata(@RequestParam("id") List<Integer> ids  );
+    void deleteSongsMetadata(@RequestParam("id") List<Integer> ids);
 }
