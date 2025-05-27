@@ -14,7 +14,7 @@
         <module>song-service</module>
         <module>resource-service</module>
         <module>discovery-service</module>
-        <module>resoucre-processor</module>
+        <module>resource-processor</module>
     </modules>
 
     <properties>

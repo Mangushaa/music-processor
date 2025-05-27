@@ -31,10 +31,14 @@ song-service:
   name: song-service
   url: ${SONG_SERVICE_URL:http://localhost:8081}
 
-
+localstack:
+  enabled: true
 
 aws:
   region: ${AWS_REGION:us-west-2}
+  url: ${AWS_URL:http://localhost:4566"}
+  accessKey: ${AWS_ACCESS_KEY:http://localhost:4566"}
+  secretKey: ${AWS_SECRET_KEY:http://localhost:4566"}
 s3:
   resource-bucket: ${RESOURCE_BUCKET:resource-bucket}
 

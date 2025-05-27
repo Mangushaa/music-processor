@@ -6,10 +6,8 @@ import org.example.intergration.client.ResourceClient;
 import org.example.intergration.client.dto.ResourceUploadResponseDto;
 import org.example.mapper.ResourceMapper;
 import org.springframework.stereotype.Service;
-import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
-import software.amazon.awssdk.services.s3.model.PutObjectResponse;
 
 import java.util.UUID;
 
@@ -20,8 +18,6 @@ public class S3ResourceClient implements ResourceClient {
     private final S3Client s3Client;
 
     private final S3ConfigurationProperties s3ConfigurationProperties;
-
-    private final ResourceMapper resourceMapper;
 
     @Override
     public ResourceUploadResponseDto uploadResource(byte[] resource) {
@@ -34,7 +30,7 @@ public class S3ResourceClient implements ResourceClient {
     }
 
     private PutObjectRequest createPutObjectRequest() {
-         return PutObjectRequest.builder()
+        return PutObjectRequest.builder()
                 .bucket(s3ConfigurationProperties.getResourceBucket())
                 .key(UUID.randomUUID().toString())
                 .contentType("audio/mpeg")

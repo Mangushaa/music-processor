@@ -1,5 +1,7 @@
 package org.example.configuration;
 
+import org.example.configuration.properties.AwsProperties;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
@@ -11,15 +13,22 @@ import software.amazon.awssdk.services.s3.S3Configuration;
 import java.net.URI;
 
 @Configuration
-public class AwsServicesConfiguration {
+@ConditionalOnProperty(name = "localstack.enabled", havingValue = "true")
+public class AwsLocalServicesConfiguration {
+
+    private final AwsProperties awsProperties;
+
+    public AwsLocalServicesConfiguration(AwsProperties awsProperties) {
+        this.awsProperties = awsProperties;
+    }
 
     @Bean
     public S3Client s3Client() {
         return S3Client.builder()
-                .endpointOverride(URI.create("http://localhost:4566"))  // or "http://s3.localhost.localstack.cloud:4566" if DNS is correctly resolved
-                .region(Region.US_WEST_2)
+                .endpointOverride(URI.create(awsProperties.getUrl()))
+                .region(Region.of(awsProperties.getRegion()))
                 .credentialsProvider(StaticCredentialsProvider.create(
-                        AwsBasicCredentials.create("test", "test")
+                        AwsBasicCredentials.create(awsProperties.getAccessKey(), awsProperties.getSecretKey())
                 ))
                 .serviceConfiguration(S3Configuration.builder().pathStyleAccessEnabled(true).build())
                 .build();

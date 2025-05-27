@@ -41,6 +41,9 @@ services:
       RESOURCE_DB_PASSWORD: ${RESOURCE_DB_PASSWORD}
       SONG_SERVICE_URL: http://song-service:8081
       AWS_REGION: us-west-2
+      AWS_URL: ${AWS_URL}
+      AWS_ACCESS_KEY: ${AWS_ACCESS_KEY}
+      AWS_SECRET_KYE: ${AWS_SECRET_KEY}
       DISCOVERY_SERVICE_URL: "http://discovery-server:${DISCOVERY_SERVICE_PORT}/eureka"
     depends_on:
       - resource-service-db
@@ -49,12 +52,10 @@ services:
     build:
       context: .
       dockerfile: ./song-service/Dockerfile
-#    deploy:
-#      replicas: 2
     container_name: song-service
     ports:
-    - '${SONG_SERVICE_PORT}:8081'
-    - "${SONG_SERVICE_DEBUG_PORT}:5005"
+      - '${SONG_SERVICE_PORT}:8081'
+      - "${SONG_SERVICE_DEBUG_PORT}:5005"
     environment:
       SONG_DB_URL: ${SONG_DB_URL}
       SONG_DB_USERNAME: ${SONG_DB_USERNAME}
@@ -67,10 +68,10 @@ services:
   resource-processor:
     build:
       context: .
-      dockerfile: ./song-service/Dockerfile
-    container_name: song-service
+      dockerfile: ./resource-processor/Dockerfile
+    container_name: resource-processor
     ports:
-       - '${RESOURCE_PROCESSOR_PORT}:8080'
+      - '${RESOURCE_PROCESSOR_PORT}:8080'
     environment:
       DISCOVERY_SERVICE_URL: "http://discovery-server:${DISCOVERY_SERVICE_PORT}/eureka"
     depends_on:
@@ -104,14 +105,11 @@ services:
       - "4566:4566"
       - "4510-4559:4510-4559"
     environment:
-      # LocalStack configuration: https://docs.localstack.cloud/references/configuration/
       - SERVICES=s3
       - DEBUG=1
 
     volumes:
       - ./localstack-init:/etc/localstack/init/ready.d
-#      - "${LOCALSTACK_VOLUME_DIR:-./volume}:/var/lib/localstack"
-#      - "/var/run/docker.sock:/var/run/docker.sock"
 
 volumes:
   song-service-db-data:
