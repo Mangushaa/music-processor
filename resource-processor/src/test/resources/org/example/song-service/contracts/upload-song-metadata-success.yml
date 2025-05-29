@@ -1,0 +1,42 @@
+description: upload song metadata
+name: upload_song_metadata
+priority: 1
+request:
+  method: POST
+  url: /songs
+  headers:
+    Accept: application/json
+  body:
+    name: "Numb"
+    artist: "Linkin Park"
+    album: "Meteora"
+    duration: "03:07"
+    year: "2003"
+response:
+  status: 201
+  headers:
+    Content-Type: application/json
+  body:
+    id: 1
+    name: "Numb"
+    artist: "Linkin Park"
+    album: "Meteora"
+    duration: "03:07"
+    year: "2003"
+  matchers:
+    body:
+      - path: $.id
+        type: by_regex
+        value: "[0-9]+"
+      - path: $.name
+        type: by_type
+      - path: $.artist
+        type: by_type
+      - path: $.album
+        type: by_type
+      - path: $.duration
+        type: by_regex
+        value: "^[0-9][0-9]:[0-9][0-9]$"
+      - path: $.year
+        type: by_regex
+        value: "\\d{4}"

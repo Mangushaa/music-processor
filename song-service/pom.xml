@@ -56,8 +56,25 @@
             <artifactId>postgresql</artifactId>
             <version>42.7.5</version>
         </dependency>
-    </dependencies>
 
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-contract-verifier</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>testcontainers</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>postgresql</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
 
     <build>
         <plugins>
@@ -102,6 +119,24 @@
                         <phase>package</phase> <!-- Ensures it runs in the package phase -->
                     </execution>
                 </executions>
+            </plugin>
+
+
+            <plugin>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-contract-maven-plugin</artifactId>
+                <extensions>true</extensions>
+                <configuration>
+                    <contractDependency>
+                        <groupId>org.example</groupId>
+                        <artifactId>resource-processor</artifactId>
+                        <version>1.0-SNAPSHOT</version>
+                    </contractDependency>
+                    <contractsMode>LOCAL</contractsMode>
+                    <baseClassForTests>
+                        org.example.contracts.ContractBaseTestClass
+                    </baseClassForTests>
+                </configuration>
             </plugin>
         </plugins>
     </build>

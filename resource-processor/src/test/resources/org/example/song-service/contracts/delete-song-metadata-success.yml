@@ -1,0 +1,22 @@
+description: delete song metadata by ids
+name: delete_song_metadata
+priority: 1
+request:
+  method: DELETE
+  url: /songs
+  queryParameters:
+    ids:
+      matches: "([0-9]+,?)+"
+  headers:
+    Accept: application/json
+response:
+  status: 200
+  headers:
+    Content-Type: application/json
+  body:
+    ids: 1,2,3
+  matchers:
+    body:
+      - path: $.ids
+        type: by_regex
+        value: "([0-9]+,?)+"

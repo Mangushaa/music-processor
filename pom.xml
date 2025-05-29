@@ -15,6 +15,7 @@
         <module>resource-service</module>
         <module>discovery-service</module>
         <module>resource-processor</module>
+        <module>resource-processor-contracts</module>
     </modules>
 
     <properties>
