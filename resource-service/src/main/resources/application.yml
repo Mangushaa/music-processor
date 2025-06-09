@@ -36,7 +36,7 @@ song-service:
   url: ${SONG_SERVICE_URL:http://localhost:8081}
 
 localstack:
-  enabled: true
+  enabled: false
 
 aws:
   region: ${AWS_REGION:us-west-2}
@@ -62,9 +62,3 @@ management:
   endpoint:
     health:
       show-details: "always"
-
-logging:
-  level:
-    org:
-      springframework:
-        amqp: DEBUG

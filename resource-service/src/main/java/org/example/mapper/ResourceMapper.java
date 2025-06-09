@@ -12,13 +12,13 @@ import software.amazon.awssdk.services.s3.model.PutObjectResponse;
 
 @Mapper(componentModel = "spring")
 public interface ResourceMapper {
-    Resource resourceUploadResponseDtoToResource(ResourceUploadResponseDto resourceUploadResponseDto);
+    Resource resourceUploadResponseDtoToResource(ResourceUploadResponse resourceUploadResponseDto);
 
     UploadResourceResponse resourceModelToUploadResourceResponse(Resource resourceModel);
 
     GetResourceResponse resourceModelToGetResourceResponse(Resource resourceModel);
 
-    ResourceUploadResponseDto putObjectResponseToResourceUploadResponseDto(PutObjectResponse putObjectResponse);
+    ResourceUploadResponse putObjectResponseToResourceUploadResponseDto(PutObjectResponse putObjectResponse);
     GetResourceResponse resourceContentResponseToGetResourceResponse (ResourceContentResponse response);
 
     @Mapping(source = "id", target = "resourceId")

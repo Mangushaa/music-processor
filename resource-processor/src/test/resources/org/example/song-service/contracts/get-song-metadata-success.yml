@@ -4,8 +4,6 @@ priority: 1
 request:
   method: GET
   url: /songs/1
-  headers:
-    Accept: application/json
 response:
   status: 200
   headers:

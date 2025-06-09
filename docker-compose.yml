@@ -11,7 +11,7 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - ./db-init-scripts/song-db:/docker-entrypoint-initdb.d/
+      - ./song-service/src/main/resources/db-init-scripts:/docker-entrypoint-initdb.d/
       - song-service-db-data:/var/lib/postgresql/data
 
   resource-service-db:

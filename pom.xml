@@ -15,7 +15,6 @@
         <module>resource-service</module>
         <module>discovery-service</module>
         <module>resource-processor</module>
-        <module>resource-processor-contracts</module>
     </modules>
 
     <properties>
@@ -39,7 +38,7 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
-
+            
             <dependency>
                 <groupId>org.springframework.cloud</groupId>
                 <artifactId>spring-cloud-dependencies</artifactId>
@@ -60,12 +59,6 @@
     </dependencyManagement>
 
     <dependencies>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>3.8.1</version>
-            <scope>test</scope>
-        </dependency>
         <!-- https://mvnrepository.com/artifact/org.projectlombok/lombok -->
         <dependency>
             <groupId>org.projectlombok</groupId>

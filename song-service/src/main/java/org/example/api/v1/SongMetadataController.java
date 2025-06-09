@@ -26,7 +26,7 @@ public class SongMetadataController {
 
     private final SongService songService;
 
-    @PostMapping
+    @PostMapping(consumes = "application/json", produces = "application/json")
     public ResponseEntity<CreateSongMetadataResponse> createSongMetadata(@RequestBody CreateSongMetadataRequest createSongMetadataRequest) {
         return ResponseEntity
                 .status(HttpStatus.CREATED)

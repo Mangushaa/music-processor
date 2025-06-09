@@ -5,18 +5,14 @@ request:
   method: DELETE
   url: /songs
   queryParameters:
-    ids:
-      matches: "([0-9]+,?)+"
-  headers:
-    Accept: application/json
+    id: "1"
 response:
   status: 200
-  headers:
-    Content-Type: application/json
   body:
-    ids: 1,2,3
+    ids:
+      - "1"
   matchers:
     body:
-      - path: $.ids
+      - path: $.ids[*]
         type: by_regex
         value: "([0-9]+,?)+"

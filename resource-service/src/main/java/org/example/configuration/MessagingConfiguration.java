@@ -11,24 +11,15 @@ import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 import org.springframework.amqp.support.converter.MessageConverter;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.env.PropertySource;
 
 @RequiredArgsConstructor
 @Configuration
 public class MessagingConfiguration {
 
     private final MessagingProperties messagingProperties;
-
-    @Autowired
-    private ApplicationContext applicationContext;
-
-//    @Autowired
-//    private PropertySource propertySource;
 
     @Bean
     @Qualifier("resourceDeleteQueue")
